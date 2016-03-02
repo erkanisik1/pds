@@ -21,6 +21,7 @@ class PThread(QThread):
                  args=[], kwargs={}, exceptionHandler=None):
         QThread.__init__(self,parent)
 
+        self.parent = parent
         if callback:
             parent.finished.connect(callback)
 
@@ -33,11 +34,17 @@ class PThread(QThread):
     def run(self):
         try:
             self.data = self.action(*self.args, **self.kwargs)
+            #print data
         except Exception, e:
             if self.exceptionHandler:
                 self.exceptionHandler(e)
         finally:
-            self.parent.cleanUp.connect(deleteLater())
+            #self.cleanUp()  #burayı incele
+            try:
+                self.parent.cleanUp.connect(deleteLater())
+            except:
+                print("parent ögesinin cleanUp özelliği yok.")
+            
 
     def cleanUp(self):
         self.deleteLater()
