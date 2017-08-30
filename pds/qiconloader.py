@@ -18,7 +18,7 @@ from glob import glob
 
 # PyQt5 Core Libraries
 from PyQt5.QtCore import QFile, QFileInfo, QDir, QSize, QSettings, Qt
-from PyQt5.QtGui import QPixmap, QPixmapCache, QIcon, QPainter
+from PyQt5.QtGui import QPixmap, QPixmapCache, QIcon, QPainter, QImage, QImageReader # QImage, QImageReader for read svg files
 from PyQt5 import QtNetwork
 
 # Logging
@@ -61,8 +61,9 @@ class QIconLoader:
         if not dataDirs.isalnum():
             dataDirs = u'/usr/local/share/:/usr/share/'
 
-        dataDirs=QDir.homePath() + ":"+dataDirs
-        dataDirs=str(self.pds.config_path) + 'share:'+ dataDirs
+        dataDirs = QDir.homePath() + ":"+dataDirs
+        #dataDirs = str(self.pds.config_path) + 'share:'+ dataDirs
+        
 
         if self.pds.session.ExtraDirs:
             dirs = QFile.decodeName(
@@ -73,11 +74,11 @@ class QIconLoader:
         self.themeName = self.pds.settings(self.pds.session.IconKey, \
                                            self.pds.session.DefaultIconTheme)
         
-        
         self.iconDirs =  filter(lambda x: path.exists(x),
                 map(lambda x: path.join(unicode(x), 'icons'),
                     dataDirs.split(':')))
         self.iconDirs = list(set(self.iconDirs))
+
         logging.debug('Icon Dirs : %s' % ','.join(self.iconDirs))
         self.themeIndex = self.readThemeIndex(self.themeName)
         self.extraIcons = ['/usr/share/pixmaps']
@@ -111,8 +112,8 @@ class QIconLoader:
                 dump=parents
                 parents = list()
                 parents.append(dump)
-                
                 break
+            
         return QIconTheme(dirList, parents)
 
     def __get_icons(self, themeName = ''):
@@ -144,7 +145,7 @@ class QIconLoader:
                 icons.extend(glob(path.join(iconDir, '*.png')))
 
         _icons = map(lambda a: a.split('/')[-1][:-4], icons)
-        
+
         return list(set(_icons))
 
     def findIconHelper(self, size = int, themeName = str, iconName = str):
@@ -169,21 +170,35 @@ class QIconLoader:
                 for theme in subDirs:
                     fileName = path.join(iconDir, themeName, theme[1],
                             '%s.png' % str(iconName))
-        
+                    fileName_svg = path.join(iconDir, themeName, theme[1],
+                            '%s.svg' % str(iconName))
                     logging.debug('Looking for : %s' % fileName)
                     if path.exists(fileName):
                         pixmap.load(fileName)
                         logging.debug('Icon: %s found in theme %s' % \
                                 (iconName, themeName))
                         return pixmap
+                    elif path.exists(fileName_svg):
+                        pixmap.load(fileName_svg)
+                        logging.debug('Icon: %s found in %s' % (iconName, iconDir))
+                        return pixmap
 
         for iconDir in self.extraIcons:
             fileName = path.join(iconDir, '%s.png' % str(iconName))
-        
+            fileName_svg = path.join(iconDir, '{}.svg'.format(str(iconName)))
             if path.exists(fileName):
                 pixmap.load(fileName)
+                #print "pixmap ->{}".format(fileName)
                 logging.debug('Icon: %s found in %s' % (iconName, iconDir))
                 return pixmap
+            elif path.exists(fileName_svg):
+                    image=QImage(size, size, QImage.Format_RGB32)
+                    reader=QImageReader(fileName)
+                    reader.read(image)
+                    pixmap.convertFromImage(image)
+                    logging.debug('Icon: %s found in %s' % (iconName, iconDir))
+                    #print "pixmap ->{}".format(fileName)
+                    return pixmap
 
         if len(self._themes) > 0:
             self._themes.pop(0)
@@ -203,6 +218,7 @@ class QIconLoader:
         if self.themeName:
             self._themes.append(self.themeName)
             for _name in name:
+                #print self.themeName, _name
                 self.pixmap = self.findIconHelper(int(size), self.themeName, _name)
                 if not self.pixmap.isNull():
                     break

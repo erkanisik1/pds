@@ -18,15 +18,21 @@ from PyQt5.QtCore import QObject, pyqtSignal
 # PDS Container
 from pds.container import PApplicationContainer
 
+WIN_NAME="Mozilla Firefox"
+
 class PMplayer(PApplicationContainer):
     def __init__(self, parent = None):
         PApplicationContainer.__init__(self, parent)
         
         if parent:
             parent.closeEvent = self.closeEvent
+        
+        self.win_name="Pisi Linux - Özgürlük Şimdi Başladı. - " + WIN_NAME
 
     def openMedia(self, path):
-        ret = self.start("mpv", (str(path),))
+        path = "http://www.pisilinux.org"
+        self.win_name= "Pisi Linux - Özgürlük Şimdi Başladı. - " + WIN_NAME
+        ret = self.start("firefox", (str(path),))
 	
         if ret[0]:
             self.show()
@@ -47,6 +53,7 @@ class TestUI(QtWidgets.QWidget):
         self.pushbutton.clicked.connect(self.getMedia)
         
         self.setGeometry(self.x(),self.y(),400,200)
+        self.win_name=self.mplayer.win_name
 
     def getMedia(self):
 	self.mplayer.openMedia(
