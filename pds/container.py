@@ -15,6 +15,8 @@
 # Qt Libraries
 from PyQt5 import Qt
 
+import time, os
+
 class PApplicationContainer(Qt.QWidget):
     clientClosed=Qt.pyqtSignal()
     processFinished=Qt.pyqtSignal([int,int])
@@ -28,10 +30,6 @@ class PApplicationContainer(Qt.QWidget):
         self._proc = None
         self._process = process
         self._args = args
-        
-        self.container=Qt.QWindow.fromWinId(self.winId())
-        self.display=self.createWindowContainer(self.container,self)
-        self.layout.addWidget(self.display)
         
         self.parent=parent
         self.pwinId=parent.winId()
@@ -47,11 +45,15 @@ class PApplicationContainer(Qt.QWidget):
         self._process = process
         self._args = args
 
-        self._proc = Qt.QProcess(self.container)
+        self._proc = Qt.QProcess(self)
         self._proc.finished.connect(self._finished)
         self._proc.start(process, args)
         
-        print self.getWID()
+        self.container=Qt.QWindow.fromWinId(self.getWID())
+        self.display=self.createWindowContainer(self.container,self)
+        self.layout.addWidget(self.display)
+        
+        #print self.getWID()
         self.clientClosed.connect(self._proc.close)
 
         return (True, "'%s' process successfully started with pid = %s" % (process, self._proc.pid()))
@@ -85,17 +87,16 @@ class PApplicationContainer(Qt.QWidget):
 
 
     def getWID(self):
-        import os
-        filename=self._args[0].split("/")[-1]
-        
-        running=os.system("xwininfo -name \"{} - mpv\"".format(filename))
+        time.sleep(5)
+        winName=self.parent.win_name
+        running=os.system("xwininfo -name \"{}\"".format(winName))
         if (not running==0):
             return "process NotRunning"
         
-        xwininfo=os.popen("xwininfo -name \"{} - mpv\"".format(filename))
+        xwininfo=os.popen("xwininfo -name \"{}\"".format(winName))
         xwininfo_out=xwininfo.read()
         xwininfo.close()
         xwininfo_out=xwininfo_out.split("\n")
         xwininfo_out=xwininfo_out[1]
         winId=xwininfo_out.split(" ")[3]
-        return winId
+        return int(winId,16)

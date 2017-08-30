@@ -27,7 +27,7 @@ class PNetworkManager(PApplicationContainer):
         if ret[0]:
             self.setMinimumSize(Qt.QSize(450, 200))
             self.show()
-        print ret
+        #print ret
         return ret
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+##!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Pardus Desktop Services
@@ -35,16 +35,16 @@ BACKWARD = QtCore.QTimeLine.Backward
 
 class PAbstractBox(QtWidgets.QWidget):
     def __init__(self, parent):
-
+        QtWidgets.QWidget.__init__(self, parent)
         # Overlay widget, it should be initialized at first
         self.__overlay = QtWidgets.QWidget(parent)
         self.__overlay.hide()
         self.__overlay_enabled = False
         self.__overlay_animated = False
         self.__overlay_styled = False
-
+        self.__overlay.stackUnder(self)
         # Main widget initializing on parent widget
-        QtWidgets.QWidget.__init__(self, parent)
+        #QtWidgets.QWidget.__init__(self, parent)
         self.hide()
 
         # Pre-defined states
@@ -335,7 +335,7 @@ class PMessageBox(PAbstractBox):
         self.icon.hide()
         self.layout.addWidget(self.icon)
 
-        self.busy = QProgressIndicator(self, "white")
+        self.busy = QProgressIndicator(self, "White")
         self.busy.hide()
         self.layout.addWidget(self.busy)
 
@@ -344,6 +344,7 @@ class PMessageBox(PAbstractBox):
 
         self._animation = 2
         self._duration = 500
+        self.raise_()
 
     def setMessage(self, message):
         if message == '':

@@ -102,9 +102,8 @@ class Pds:
                 settings = self.parse(self.config_file, force = True)
             else:
                 return default
-            
             _value = settings.value(key)
-            variant_value=QVariant(_value)
+            variant_value = QVariant(_value)
             if not variant_value.typeName()=='QString':
                 # Sometimes kdeglobals stores values without quotes
                 #_value = _value.toStringList()
@@ -112,13 +111,14 @@ class Pds:
                     value = _value.join(',')
             else:
                 value = unicode(_value)
+
             if not value or value == '':
                 logging.debug('Switching to default conf')
                 alternateConfig = self.session.DefaultConfigPath or \
-                        path.join(self.install_prefix, self.session.ConfigFile)
+                    path.join(self.install_prefix, self.session.ConfigFile)
                 settings = self.parse(alternateConfig, force = True)
                 value = unicode(settings.value(key, default))
-
+                
         elif self.session.ConfigType == 'xml':
             settings = self.parse(self.config_file, 'xml').getTag('property')
             def getval(settings, key):
@@ -132,7 +132,6 @@ class Pds:
                 settings = self.parse(alternateConfig, 'xml',
                         force = True).getTag('property')
                 value = getval(settings, key)
-
         elif self.session.ConfigType == 'env':
             value = getenv(key)
 

@@ -27,7 +27,7 @@ class PMplayer(PApplicationContainer):
 
     def openMedia(self, path):
         ret = self.start("mplayer", ("-wid", str(self.winId()), str(path)))
-	print ret
+	#print ret
         if ret[0]:
             self.show()
 

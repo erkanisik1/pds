@@ -52,7 +52,7 @@ class Uninstall(Command):
             shutil.rmtree(project_dir)
 
 setup(name=PROJECT,
-      version='2.0.0',
+      version='2.1.0',
       description='Pds: Pisi Desktop Services',
       long_description='Pds is a Python Library that helps developers for '\
                        'creating desktop environment independet UI applications',

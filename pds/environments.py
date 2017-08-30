@@ -33,12 +33,13 @@ class Kde5(DefaultDe):
     SessionTypes         = ('/usr/share/xsessions/plasma-mediacenter')
     Version              = '5'
     VersionKey           = 'KDE_SESSION_VERSION'
-    ConfigPath           = ('$HOME/.local5/', '$HOME/.kde4/')
-    ConfigFile           = 'share/config/kdeglobals'
+    ConfigPath           = ('$HOME/.config/', '$HOME/.config5/')
+    ConfigFile           = 'kdeglobals'
     ConfigType           = 'ini'
     #ConfigBin            = 'kde4-config'
     #DefaultIconFile      = '/usr/share/icons/default.kde4'
-    DefaultIconTheme     = 'oxygen' # breeze simge teması svg dosyalarından oluşuyor pds png uzantılı dosyalar açıyor
+    DefaultConfigPath    = '$HOME/.config/kdeglobals'
+    DefaultIconTheme     = 'breeze' # breeze simge teması svg dosyalarından oluşuyor pds png uzantılı dosyalar açıyor
     IconKey              = 'Icons/Theme'
     #try:
     #    from PyKDE4 import kdecore, kdeui
